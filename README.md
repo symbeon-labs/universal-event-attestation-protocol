@@ -3,7 +3,7 @@
 
 # Universal Event Attestation Protocol (UEAP)
 
-**The Global Standard for Cryptographically Verifiable Event Attestations**
+**An open protocol for cryptographically verifiable event attestations**
 
 ---
 
@@ -15,7 +15,7 @@
 
 ## 🌌 Overview
 
-UEAP is a modular, high-velocity protocol designed to create **Sovereign Evidence**. It decouples the act of observing an event from the cryptographic proof required to trust it, enabling anyone to register and verify real-world occurrences with mathematical certainty.
+UEAP is a modular, high-velocity protocol designed to create **Sovereign Evidence**. It decouples the act of observing an event from the cryptographic proof required to trust it, enabling systems to register and verify event claims with cryptographic proofs and explicit provenance. The guarantees depend on the evidence, cryptographic primitives, oracles, and implementation used.
 
 ---
 
@@ -77,7 +77,7 @@ const isValid = await UEAP.verify(attestation.id);
 
 ## 🏛️ Reference Implementation
 
-The [**GreenProof Platform**](../../apps/greenproof) is the official reference implementation of UEAP, demonstrating how to use the protocol for global ESG compliance and RWA minting.
+The **GreenProof Platform** is a reference implementation and applied experiment demonstrating one use of UEAP for ESG/RWA workflows.
 
 ---
 
