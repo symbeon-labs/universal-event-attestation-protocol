@@ -3,88 +3,194 @@
 
 # Universal Event Attestation Protocol (UEAP)
 
-**An open protocol for cryptographically verifiable event attestations**
+**An experimental open protocol model for turning observations and evidence into cryptographically verifiable attestations**
 
 ---
 
-[![License](https://img.shields.io/badge/License-MIT-white?style=for-the-badge)](LICENSE)
-[![ZK-SNARKs](https://img.shields.io/badge/Proofs-ZK--SNARKs-00FF88?style=for-the-badge&logo=chainlink)](https://chain.link/)
-[![Status](https://img.shields.io/badge/Status-Protocol--Stable-00FF88?style=for-the-badge)](https://github.com/symbeon-labs/universal-event-attestation-protocol)
+[![Status](https://img.shields.io/badge/Status-Experimental%20Specification-888888?style=for-the-badge)](./spec/UEAP_SPEC_v0.2.md)
 
 </div>
 
-## 🌌 Overview
+## Overview
 
-UEAP is a modular, high-velocity protocol designed to create **Sovereign Evidence**. It decouples the act of observing an event from the cryptographic proof required to trust it, enabling systems to register and verify event claims with cryptographic proofs and explicit provenance. The guarantees depend on the evidence, cryptographic primitives, oracles, and implementation used.
+UEAP defines a domain-agnostic model for transforming observations and evidence into cryptographically verifiable attestations.
 
----
+The protocol separates **what was observed**, **how the observation is represented**, **what is cryptographically committed**, and **how the resulting attestation is verified**.
 
-## 🏗️ Technical Architecture
+**Core pipeline:**
 
-```mermaid
-graph TD
-    subgraph "Emit Phase"
-        Event["UEAP Event\n(Schema)'] --> Hash["Deterministic\nKeccak256 Hash"]
-    end
+`Reality → Observation → Evidence → Canonical Representation → Commitment → Proof → Attestation → Registry → Verification → Verified State`
 
-    subgraph "Prove Phase"
-        Hash --> ZK["ZK-Verifier\n(Groth16)"]
-        Hash --> Oracle["Chainlink CRE\n(Oracle Consensus)"]
-    end
+> **Evidence before intervention.**
 
-    subgraph "Register Phase"
-        ZK --> Registry["Attestation Registry\n(Smart Contract)"]
-        Oracle --> Registry
-    end
+UEAP does not define the semantics of a particular domain. ERP systems, IoT devices, telemetry platforms, operational software, and other sources can be translated through adapters into a common UEAP representation.
 
-    subgraph "Consume Phase"
-        Registry --> GP["GreenProof\n(ESG Compliance)"]
-        Registry --> GD["GuardDrive\n(Vehicle Telemetry)"]
-        Registry --> SD["Symbeon DNA\n(AI Governance)"]
-    end
+## Architecture
 
-    style Registry fill:#00FF88,stroke:#333,stroke-width:4px
-    style ZK fill:#111,stroke:#00FF88
-    style Oracle fill:#111,stroke:#00FF88
+```text
+Source Systems
+     │
+     ├── ERP
+     ├── IoT
+     ├── Telemetry
+     └── Other Observers
+     │
+     ▼
+┌─────────────────────┐
+│   Source Adapter    │
+└─────────┬───────────┘
+          ▼
+┌─────────────────────┐
+│     UEAP Event      │
+└─────────┬───────────┘
+          ▼
+┌─────────────────────┐
+│    Canonicalization │
+└─────────┬───────────┘
+          ▼
+┌─────────────────────┐
+│     Commitment      │
+└─────────┬───────────┘
+          ▼
+┌─────────────────────┐
+│     Attestation     │
+└─────────┬───────────┘
+          ▼
+┌─────────────────────┐
+│ Verification /      │
+│ Verified State      │
+└─────────────────────┘
 ```
 
----
+The current repository includes experimental ERP and IoT adapters demonstrating cross-source convergence into the same UEAP event representation.
 
-## 🛠️ Developer SDK
+## Cross-source experiment
 
-Integrating UEAP is simple by design.
+A reference experiment maps semantically equivalent ERP and IoT observations to the same canonical UEAP representation.
 
-```typescript
-import { UEAP } from "@ueap/sdk";
-
-// 1. Create a standardized event
-const event = UEAP.createEvent({
-  actor: "Satellite-01",
-  action: "Climate.Change",
-  object: "Amazon-Region-A4",
-  location: "BR",
-  evidence: "temp: 42.5; humidity: 12"
-});
-
-// 2. Generate Attestation (Proof + Registry Handshake)
-const attestation = await UEAP.generateAttestation(event, issuer, proof);
-
-// 3. Verify Anywhere
-const isValid = await UEAP.verify(attestation.id);
+```text
+ERP ──┐
+      ├──→ UEAP Event ──→ Canonical Representation ──→ Commitment
+IoT ──┘
 ```
 
----
+Under the current experimental reference profile:
 
-## 🏛️ Reference Implementation
+- equivalent observations produce the same UEAP event;
+- their canonical representations are identical;
+- their commitments are identical.
 
-The **GreenProof Platform** is a reference implementation and applied experiment demonstrating one use of UEAP for ESG/RWA workflows.
+This demonstrates **cross-source semantic convergence** under the reference profile.
 
----
+It does **not** establish that the underlying observations share the same physical origin, nor does it solve provenance binding.
 
-## 📜 Specification
+See [Adapter Conformance](./spec/adapter-conformance.md) and [Cross-Source Commitment Experiment](./experiments/CROSS_SOURCE_COMMITMENT_RESULT_v0.1.md).
 
-For an indepth look at the mathematical and logical foundations, see [**UEAP_SPEC.md**](../../UEAP_SPEC.md).
+## Core concepts
 
----
+### Observation
 
-*Built with ❤️ for a Sovereign Future by Symbeon Labs.*
+A representation produced from an occurrence by a sensor, system, observer, or process.
+
+### Evidence
+
+Information supporting an observation. Evidence may be raw, transformed, referenced, or cryptographically committed.
+
+### Canonical Representation
+
+A deterministic representation used as the input to a cryptographic commitment.
+
+### Commitment
+
+A cryptographic binding to a canonical representation. The algorithm and encoding rules must be explicitly declared by the profile.
+
+### Attestation
+
+A structured claim binding an event representation, issuer/provenance information, proof material, and relevant metadata.
+
+### Verification
+
+A deterministic procedure that evaluates an attestation against its declared cryptographic and policy requirements.
+
+### Verified State
+
+A machine-readable result of verification. It describes what checks passed under the declared profile and policy; it is not an unconditional statement that the real-world event occurred.
+
+## Adapter layer
+
+Adapters translate source-specific observations into the UEAP event model.
+
+Current reference adapters:
+
+- **ERP Adapter** — operational transaction records.
+- **IoT Adapter** — sensor observations.
+
+Adapter conformance requires deterministic mapping, declared versions, preservation of semantic meaning, and explicit treatment of source/provenance information.
+
+See [Adapter Conformance](./spec/adapter-conformance.md).
+
+## Specification
+
+- [UEAP Specification v0.2](./spec/UEAP_SPEC_v0.2.md)
+- [Event Model](./spec/event-model.md)
+- [Attestation Model](./spec/attestation-model.md)
+- [Verification Model](./spec/verification-model.md)
+- [Adapter Conformance](./spec/adapter-conformance.md)
+- [Conformance](./spec/conformance.md)
+- [Terminology](./spec/terminology.md)
+- [Implementation Status](./spec/implementation-status.md)
+
+## Repository structure
+
+```text
+spec/           Protocol models and conformance rules
+core/           Reference event and commitment implementation
+adapters/       Source-to-UEAP adapters
+sdk/            Reference SDK interface
+contracts/      Experimental registry and verification contracts
+proofs/         Domain-specific proof experiments
+protocols/      Domain extensions
+experiments/    Research experiments and recorded results
+tests/          Reference conformance tests
+```
+
+## Domain extensions
+
+GreenProof, GuardTag, ESG circuits, oracle integrations, and other application-specific components are examples or extensions.
+
+They are **not part of the UEAP core** unless explicitly incorporated into a future specification.
+
+## Research boundary
+
+The following remain active research questions:
+
+- event identity versus provenance;
+- single versus separate commitments for event identity and provenance;
+- canonicalization profiles;
+- proof-system profiles;
+- registry interoperability;
+- issuer status and revocation across profiles;
+- composition of attestations from multiple sources.
+
+These questions are being evaluated experimentally rather than presented as settled protocol requirements.
+
+## Security boundary
+
+UEAP cryptography verifies declared cryptographic relationships.
+
+It does **not** independently establish:
+
+- physical truth;
+- sensor accuracy;
+- issuer honesty;
+- semantic correctness;
+- absence of compromised infrastructure;
+- correctness of an external domain process.
+
+## Status
+
+**v0.2 — Experimental Specification**
+
+This repository is an evolving research and reference implementation. The current specification does not claim protocol stability, production readiness, novelty, or patentability.
+
+**Evidence before intervention.**

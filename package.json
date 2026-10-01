@@ -1,7 +1,11 @@
 {
   "name": "@ueap/core",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "private": true,
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
   "dependencies": {
     "ethers": "^6.10.0"
   },
