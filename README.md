@@ -136,6 +136,7 @@ See [Adapter Conformance](./spec/adapter-conformance.md).
 - [Attestation Model](./spec/attestation-model.md)
 - [Verification Model](./spec/verification-model.md)
 - [Adapter Conformance](./spec/adapter-conformance.md)
+- [Domain → Attestation Boundary](./spec/domain-attestation-boundary.md)
 - [Conformance](./spec/conformance.md)
 - [Terminology](./spec/terminology.md)
 - [Implementation Status](./spec/implementation-status.md)
