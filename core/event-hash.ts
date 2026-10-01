@@ -1,20 +1,11 @@
 import { ethers } from "ethers";
 import { UEAPEvent } from "./event-schema";
+import { canonicalizeEvent } from "./canonicalize";
 
 /**
- * @notice Generates a deterministic hash for a UEAP event schema.
+ * Reference commitment over the declared canonical representation.
+ * The canonicalization/primitive pair is experimental, not normative UEAP.
  */
 export function hashEvent(event: UEAPEvent): string {
-  const encoded = ethers.abiCoder.encode(
-    ["string", "string", "string", "string", "uint256", "string"],
-    [
-      event.actor,
-      event.action,
-      event.object,
-      event.location,
-      typeof event.timestamp === "string" ? Math.floor(new Date(event.timestamp).getTime() / 1000) : event.timestamp,
-      event.evidence
-    ]
-  );
-  return ethers.keccak256(encoded);
+  return ethers.keccak256(ethers.toUtf8Bytes(canonicalizeEvent(event)));
 }
