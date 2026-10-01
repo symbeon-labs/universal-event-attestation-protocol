@@ -1,19 +1,22 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
 /**
- * @title Verifier
- * @notice Groth16 SNARK Verifier for GreenProof ESG Consensus (BN254).
- * @dev This contract follows the standard SnarkJS/Circom interface for on-chain proof verification.
- * 
- * Circuit: ESGScore (score >= 80)
- * Public Inputs: 1 (isCompliant flag)
+ * @title ExperimentalVerifierStub
+ * @notice NON-PRODUCTION reference stub for the GreenProof ESG experiment.
+ * @dev This contract DOES NOT perform Groth16 pairing verification.
+ *      It only checks that the supplied public input equals 1.
+ *
+ * This file is not a UEAP normative verifier and MUST NOT be treated as
+ * cryptographic proof verification in production.
  */
 contract Verifier {
     /**
-     * @notice Verifies a Groth16 Zero-Knowledge Proof.
-     * @param a      Proof component A (G1 point)
-     * @param b      Proof component B (G2 point)
-     * @param c      Proof component C (G1 point)
-     * @param input  Public signal (input[0] is binary compliance flag)
-     * @return bool  True if proof is mathematically valid and input confirms compliance.
+     * @notice Experimental placeholder for a Groth16 verification interface.
+     * @return true only when input[0] == 1.
+     *
+     * WARNING: proof parameters a, b and c are intentionally unused.
+     * A production verifier must perform the actual BN254 pairing checks.
      */
     function verifyProof(
         uint[2] memory a,
@@ -21,9 +24,7 @@ contract Verifier {
         uint[2] memory c,
         uint[1] memory input
     ) public pure returns (bool) {
-        // PRODUCTION NOTE: In a full deployment, this contains the BN254 pairing logic.
-        // For the Hackathon Consensus, we verify the Public Input result (isCompliant).
-        // input[0] == 1 indicates the private 'score' was >= 80 inside the circuit.
+        a; b; c;
         return input[0] == 1;
     }
 }
