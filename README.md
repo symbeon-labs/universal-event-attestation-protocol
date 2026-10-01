@@ -3,88 +3,52 @@
 
 # Universal Event Attestation Protocol (UEAP)
 
-**An open protocol for cryptographically verifiable event attestations**
+**An experimental open protocol model for cryptographically verifiable event attestations**
 
 ---
 
-[![License](https://img.shields.io/badge/License-MIT-white?style=for-the-badge)](LICENSE)
-[![ZK-SNARKs](https://img.shields.io/badge/Proofs-ZK--SNARKs-00FF88?style=for-the-badge&logo=chainlink)](https://chain.link/)
-[![Status](https://img.shields.io/badge/Status-Protocol--Stable-00FF88?style=for-the-badge)](https://github.com/symbeon-labs/universal-event-attestation-protocol)
+[![Status](https://img.shields.io/badge/Status-Experimental%20Specification-888888?style=for-the-badge)](./spec/UEAP_SPEC_v0.2.md)
 
 </div>
 
-## 🌌 Overview
+## Overview
 
-UEAP is a modular, high-velocity protocol designed to create **Sovereign Evidence**. It decouples the act of observing an event from the cryptographic proof required to trust it, enabling systems to register and verify event claims with cryptographic proofs and explicit provenance. The guarantees depend on the evidence, cryptographic primitives, oracles, and implementation used.
+UEAP defines a domain-agnostic model for transforming observations and evidence into cryptographically verifiable attestations.
 
----
+**Core pipeline:**
 
-## 🏗️ Technical Architecture
+`Reality → Observation → Evidence → Canonical Representation → Commitment → Proof → Attestation → Registry → Verification → Verified State`
 
-```mermaid
-graph TD
-    subgraph "Emit Phase"
-        Event["UEAP Event\n(Schema)'] --> Hash["Deterministic\nKeccak256 Hash"]
-    end
+UEAP separates protocol mechanics from domain semantics. Domain adapters may transform source-specific observations into UEAP representations without making those domain semantics part of the core.
 
-    subgraph "Prove Phase"
-        Hash --> ZK["ZK-Verifier\n(Groth16)"]
-        Hash --> Oracle["Chainlink CRE\n(Oracle Consensus)"]
-    end
+> **Security boundary:** UEAP cryptography verifies declared cryptographic relationships. It does not independently establish physical truth, sensor accuracy, issuer honesty, semantic correctness, or the absence of compromised infrastructure.
 
-    subgraph "Register Phase"
-        ZK --> Registry["Attestation Registry\n(Smart Contract)"]
-        Oracle --> Registry
-    end
+## Specification
 
-    subgraph "Consume Phase"
-        Registry --> GP["GreenProof\n(ESG Compliance)"]
-        Registry --> GD["GuardDrive\n(Vehicle Telemetry)"]
-        Registry --> SD["Symbeon DNA\n(AI Governance)"]
-    end
+- [UEAP Specification v0.2](./spec/UEAP_SPEC_v0.2.md)
+- [Event Model](./spec/event-model.md)
+- [Attestation Model](./spec/attestation-model.md)
+- [Verification Model](./spec/verification-model.md)
+- [Conformance](./spec/conformance.md)
+- [Terminology](./spec/terminology.md)
+- [Implementation Status](./spec/implementation-status.md)
 
-    style Registry fill:#00FF88,stroke:#333,stroke-width:4px
-    style ZK fill:#111,stroke:#00FF88
-    style Oracle fill:#111,stroke:#00FF88
-```
+## Repository status
 
----
+This repository contains an **experimental protocol specification, reference code, and domain-specific experiments**.
 
-## 🛠️ Developer SDK
+The specification is the normative boundary where explicitly stated. Existing code is not automatically normative: components are classified as reference implementation, experimental implementation, stub, or domain extension.
 
-Integrating UEAP is simple by design.
+### Domain extensions
 
-```typescript
-import { UEAP } from "@ueap/sdk";
+GreenProof, GuardTag, ESG circuits, oracle integrations, and other application-specific components are examples/extensions and are not part of the UEAP core unless explicitly incorporated into a future specification.
 
-// 1. Create a standardized event
-const event = UEAP.createEvent({
-  actor: "Satellite-01",
-  action: "Climate.Change",
-  object: "Amazon-Region-A4",
-  location: "BR",
-  evidence: "temp: 42.5; humidity: 12"
-});
+## Research boundary
 
-// 2. Generate Attestation (Proof + Registry Handshake)
-const attestation = await UEAP.generateAttestation(event, issuer, proof);
+Questions concerning event identity, evidence binding, provenance commitments, canonicalization profiles, and interoperability remain under research. Unresolved design choices are intentionally not presented as settled protocol requirements.
 
-// 3. Verify Anywhere
-const isValid = await UEAP.verify(attestation.id);
-```
+## Status
 
----
+**v0.2 — Experimental Specification**
 
-## 🏛️ Reference Implementation
-
-The **GreenProof Platform** is a reference implementation and applied experiment demonstrating one use of UEAP for ESG/RWA workflows.
-
----
-
-## 📜 Specification
-
-For an indepth look at the mathematical and logical foundations, see [**UEAP_SPEC.md**](../../UEAP_SPEC.md).
-
----
-
-*Built with ❤️ for a Sovereign Future by Symbeon Labs.*
+This version is not a claim of protocol stability, production readiness, novelty, or patentability.
